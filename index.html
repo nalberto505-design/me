@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alberto Navarrete | Portfolio</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+  body, html { margin:0; padding:0; font-family:'Poppins',sans-serif; overflow-x:hidden; background:#111; color:#eee; }
+  header { text-align:center; padding:2rem 0; position:relative; z-index:10; }
+  header h1 { font-size:3rem; color:#ff6347; text-shadow:0 0 10px #ff6347; margin:0; }
+  nav { display:flex; justify-content:center; gap:2rem; background:#222; position:sticky; top:0; z-index:9; }
+  nav a { color:#eee; text-decoration:none; padding:1rem; transition:0.3s; position:relative; }
+  nav a::after { content:""; position:absolute; width:0; height:2px; background:#ff6347; left:0; bottom:0; transition:0.3s; }
+  nav a:hover::after { width:100%; }
+  section { padding:6rem 2rem; text-align:center; position:relative; z-index:1; opacity:0; transform:translateY(50px); transition:all 0.8s ease-out; }
+  section.visible { opacity:1; transform:translateY(0); }
+  .gallery { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:2rem; margin-top:2rem; }
+  .gallery img { width:100%; border-radius:12px; cursor:pointer; transition:0.4s; box-shadow:0 0 10px #000; }
+  .gallery img:hover { transform:scale(1.1) rotate(1deg); box-shadow:0 0 30px #ff6347,0 0 50px #ff6347; }
+  .three-container { width:80%; max-width:800px; height:500px; margin:2rem auto; border-radius:15px; overflow:hidden; box-shadow:0 0 50px #00ffff; }
+  footer { background:#222; text-align:center; padding:2rem; font-size:0.9rem; }
+  input, textarea { padding:10px; margin:10px 0; width:100%; max-width:400px; border-radius:6px; border:none; }
+  button { padding:10px 20px; background:#ff6347; color:white; border:none; border-radius:6px; cursor:pointer; transition:0.3s; }
+  button:hover { background:#ff4500; box-shadow:0 0 20px #ff6347; }
+  /* Particle background canvas */
+  #particles { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<header>
+  <h1>Alberto Navarrete</h1>
+</header>
+
+<nav>
+  <a href="#home">Home</a>
+  <a href="#photography">Photography</a>
+  <a href="#blender">3D Blender</a>
+  <a href="#models">3D Models</a>
+  <a href="#about">About Me</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<section id="home">
+  <h2>Welcome to My Portfolio</h2>
+  <p>Showcasing my photography and 3D Blender projects with interactive effects.</p>
+</section>
+
+<section id="photography">
+  <h2>Photography</h2>
+  <div class="gallery">
+    <img src="photos/photo1.jpg" alt="Photo 1">
+    <img src="photos/photo2.jpg" alt="Photo 2">
+    <img src="photos/photo3.jpg" alt="Photo 3">
+    <img src="photos/photo4.jpg" alt="Photo 4">
+  </div>
+</section>
+
+<section id="blender">
+  <h2>3D Blender Projects</h2>
+  <div class="three-container" id="three-container"></div>
+</section>
+
+<section id="models">
+  <h2>3D Models</h2>
+  <div class="gallery">
+    <img src="models/model1.jpg" alt="3D Model 1">
+    <img src="models/model2.jpg" alt="3D Model 2">
+  </div>
+</section>
+
+<section id="about">
+  <h2>About Me</h2>
+  <p>Hello! I'm Alberto, a photographer and 3D artist creating immersive visuals and interactive experiences.</p>
+</section>
+
+<section id="contact">
+  <h2>Contact Me</h2>
+  <form>
+    <input type="text" placeholder="Your Name" required><br>
+    <input type="email" placeholder="Your Email" required><br>
+    <textarea placeholder="Your Message" rows="5" required></textarea><br>
+    <button type="submit">Send</button>
+  </form>
+</section>
+
+<footer>
+  &copy; 2026 Alberto Navarrete. All rights reserved.
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+<script>
+// Smooth section reveal
+const sections = document.querySelectorAll('section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold:0.2 });
+sections.forEach(s => observer.observe(s));
+
+// Three.js interactive 3D cube
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth*0.8/500, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+const container = document.getElementById('three-container');
+renderer.setSize(container.clientWidth, container.clientHeight);
+container.appendChild(renderer.domElement);
+const geometry = new THREE.BoxGeometry();
+const material = new THREE.MeshStandardMaterial({color:0x00ffff, roughness:0.5, metalness:0.7});
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+const light = new THREE.PointLight(0xff6347,1,100);
+light.position.set(10,10,10);
+scene.add(light);
+camera.position.z = 3;
+
+// Mouse reactive light
+document.addEventListener('mousemove', e => {
+  light.position.x = (e.clientX/window.innerWidth-0.5)*20;
+  light.position.y = -(e.clientY/window.innerHeight-0.5)*20;
+});
+
+function animate(){
+  requestAnimationFrame(animate);
+  cube.rotation.x += 0.01;
+  cube.rotation.y += 0.01;
+  renderer.render(scene, camera);
+}
+animate();
+
+// Particle background
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+let particles = [];
+for(let i=0;i<150;i++){
+  particles.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*2+1, dx:(Math.random()-0.5)*0.5, dy:(Math.random()-0.5)*0.5});
+}
+function particleAnimate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p => {
+    p.x += p.dx; p.y += p.dy;
+    if(p.x<0||p.x>canvas.width)p.dx*=-1;
+    if(p.y<0||p.y>canvas.height)p.dy*=-1;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle = '#ff6347';
+    ctx.fill();
+  });
+  requestAnimationFrame(particleAnimate);
+}
+particleAnimate();
+</script>
+</body>
+</html>
